@@ -1,56 +1,57 @@
 # MonoWeather
 
-Крошечная чёрно-белая погода для Android. Виджет в одну строку: маленькая чёрная
-плашка размером с иконку (белый значок погоды + градусы), справа — название места
-и строка про следующие 24 часа с текущим UV в конце:
+A tiny black-and-white weather widget for Android. One row: a small black tile
+the size of an app icon (white weather glyph + degrees), with the place name and
+a "next 24 hours" line next to it — the current UV index always closes the line:
 
 ```
 [☀ 14°]  Kreuzberg
          Rain at 15:00 · UV 3
 ```
 
-- **Обновляется ТОЛЬКО по тапу** (по виджету или кнопкой в приложении). Никаких
-  фоновых задач, расписаний и повторных попыток — без тапа нет ни одного запроса.
-  Один тап = один запрос ~2 КБ.
-- **Тап** = определить место + скачать погоду. Только «приблизительное
-  местоположение» и только пока идёт тап; геолокации в фоне нет.
-- **Строка «24 часа»**: идёт осадок → `Rain until 18:00`; будет → `Rain at 15:00`
-  (`Drizzle`/`Snow`/`Storm`); сухо → средняя температура следующих суток против
-  прошедших: `Next 24h: 4° warmer` / `3° colder` / `same`. Логика — `data/Forecast.kt`.
-- **Данные** — [Open-Meteo](https://open-meteo.com): бесплатно, без API-ключа.
-  Наружу уходят только координаты, округлённые до ~1 км.
-- Отступы виджета подогнаны под **Niagara launcher** (плашка — по колонке иконок,
-  текст — по колонке подписей).
+- **Updates ONLY when you tap it** (the widget, or the button in the app). No
+  background jobs, no schedules, no retries — without a tap there is not a
+  single request. One tap = one ~2 KB request.
+- **A tap** = find the current place + download the weather. Approximate location
+  only, and only during the tap; no background location access.
+- **The "next 24h" line**: precipitation now → `Rain until 18:00`; coming later →
+  `Rain at 15:00` (`Drizzle` / `Snow` / `Storm`); dry → mean temperature of the
+  next 24 hours vs the past 24 hours: `Next 24h: 4° warmer` / `3° colder` / `same`.
+  The logic lives in `data/Forecast.kt`.
+- **Data** — [Open-Meteo](https://open-meteo.com): free, no API key. The only
+  thing that leaves the phone is the coordinates, rounded to ~1 km.
+- Widget margins are tuned for **Niagara Launcher** (the tile lines up with the
+  icon column, the text with the app-label column).
 
-## Как устроено
+## How it works
 
 ```
 app/src/main/java/com/monoweather/app/
-├── MainActivity.kt          — экран приложения (Compose): погода, «обновить место», «добавить виджет»
-├── RefreshActivity.kt       — невидимая активити, которую открывает тап по виджету
+├── MainActivity.kt          — app screen (Compose): weather, "update place", "add widget"
+├── RefreshActivity.kt       — invisible activity opened by a widget tap
 ├── data/
-│   ├── OpenMeteo.kt         — один запрос: текущая погода + UV + почасовой ±24ч (HttpURLConnection + org.json)
-│   ├── Forecast.kt          — почасовой прогноз → строка «Rain at 15:00» / «Next 24h: 4° warmer»
-│   └── WeatherStore.kt      — сохранённое место + последняя погода (SharedPreferences)
+│   ├── OpenMeteo.kt         — one request: current weather + UV + hourly ±24h (HttpURLConnection + org.json)
+│   ├── Forecast.kt          — hourly forecast → "Rain at 15:00" / "Next 24h: 4° warmer"
+│   └── WeatherStore.kt      — saved place + last weather (SharedPreferences)
 ├── location/
-│   ├── Locator.kt           — разовое приблизительное местоположение (LocationManager)
-│   └── Places.kt            — название места по координатам (Geocoder)
+│   ├── Locator.kt           — one-shot approximate location (platform LocationManager)
+│   └── Places.kt            — place name from coordinates (Geocoder)
 ├── work/
-│   ├── WeatherWorker.kt     — скачать погоду для сохранённого места и перерисовать виджеты
-│   └── Scheduler.kt         — разовая задача после тапа (без расписаний и повторов)
+│   ├── WeatherWorker.kt     — fetch weather for the saved place and redraw the widgets
+│   └── Scheduler.kt         — one-off job after a tap (no schedules, no retries)
 └── widget/
     ├── WeatherWidget.kt     — AppWidgetProvider
-    ├── WidgetRenderer.kt    — рисует виджет из сохранённых данных
-    └── WeatherIcons.kt      — WMO-код погоды → значок / описание
+    ├── WidgetRenderer.kt    — draws the widget from saved data
+    └── WeatherIcons.kt      — WMO weather code → glyph / description
 ```
 
-**Почему тап открывает невидимую активити.** С разрешением «только во время
-использования» Android отдаёт геолокацию, лишь когда приложение на переднем плане.
-Поэтому тап по виджету на долю секунды открывает прозрачную активити: она берёт
-координаты (при первом тапе заодно спрашивает разрешение) и сразу закрывается.
-Погоду потом качает WorkManager.
+**Why a tap opens an invisible activity.** With "while using the app" location
+permission, Android only hands out the location while the app is in the
+foreground. So a widget tap opens a transparent activity for a split second: it
+grabs the coordinates (asking for the permission on the very first tap) and
+closes right away. WorkManager then downloads the weather.
 
-## Сборка и установка
+## Build and install
 
 ```bash
 ./gradlew assembleDebug
@@ -60,12 +61,14 @@ app/src/main/java/com/monoweather/app/
 adb install -r app/build/outputs/apk/debug/app-debug.apk
 ```
 
-Дальше: открыть MonoWeather → разрешить геолокацию → «Добавить виджет на экран».
+Then: open MonoWeather → allow location → tap «Добавить виджет на экран»
+("Add widget to home screen"). The in-app screen is currently in Russian; the
+widget itself is in English.
 
-## Лицензии и атрибуция
+## Licenses and attribution
 
-- Погода: [Open-Meteo.com](https://open-meteo.com), данные по лицензии
+- Weather data: [Open-Meteo.com](https://open-meteo.com), licensed under
   [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
-- Значки погоды нарисованы по мотивам [Feather Icons](https://feathericons.com)
-  (MIT License, © 2013–2017 Cole Bemis) — текст лицензии в
+- Weather glyphs are based on [Feather Icons](https://feathericons.com)
+  (MIT License, © 2013–2017 Cole Bemis) — full license text in
   [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
