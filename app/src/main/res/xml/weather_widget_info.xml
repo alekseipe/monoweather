@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  One row high. Niagara stretches widgets to the full row anyway; on grid
+  launchers it defaults to 4 cells wide (text needs the room) and can be
+  narrowed down to just the tile. updatePeriodMillis is 0: the widget never
+  refreshes on its own — only on a tap.
+-->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:description="@string/widget_description"
+    android:initialLayout="@layout/widget_weather"
+    android:minWidth="40dp"
+    android:minHeight="40dp"
+    android:minResizeWidth="40dp"
+    android:previewLayout="@layout/widget_weather"
+    android:resizeMode="horizontal"
+    android:targetCellWidth="4"
+    android:targetCellHeight="1"
+    android:updatePeriodMillis="0"
+    android:widgetCategory="home_screen" />

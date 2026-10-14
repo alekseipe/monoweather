@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">MonoWeather</string>
+    <string name="widget_description">Крошечная ч/б погода. Тап — обновить место и погоду.</string>
+</resources>

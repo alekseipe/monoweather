@@ -1,0 +1,23 @@
+# Gradle
+.gradle/
+build/
+
+# Android Studio / IntelliJ
+*.iml
+.idea/
+.cxx/
+
+# Local SDK path (machine-specific — never commit)
+local.properties
+
+# Signing keys / secrets
+*.jks
+*.keystore
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Logs / captures
+captures/
+*.log

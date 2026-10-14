@@ -1,0 +1,22 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- Small sun peeking out... -->
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M6,8.5a3.5,3.5 0 1,0 7,0a3.5,3.5 0 1,0 -7,0 M9.5,2.5L9.5,3.5 M3.5,8.5L4.5,8.5 M14.5,8.5L15.5,8.5 M5.26,4.26L5.96,4.96 M13.04,4.96L13.74,4.26 M5.26,12.74L5.96,12.04 M9.5,13.5L9.5,14.5 M13.04,12.04L13.74,12.74"
+        android:strokeColor="#FFFFFF"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:strokeWidth="2" />
+    <!-- ...from behind a cloud. Black fill masks the part of the sun it covers. -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M19,13.5h-0.945A6,6 0 1,0 12.25,21h6.75a3.75,3.75 0 0,0 0,-7.5z"
+        android:strokeColor="#FFFFFF"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:strokeWidth="2" />
+</vector>
